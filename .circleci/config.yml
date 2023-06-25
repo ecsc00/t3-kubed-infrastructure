@@ -1,0 +1,28 @@
+version: 2.1
+orbs:
+  terraform: circleci/terraform@3.2.1
+
+workflows:
+  deploy_infrastructure:
+    jobs:
+      - terraform/init:
+          checkout: true
+          path: ./terraform
+      - terraform/validate:
+          checkout: true
+          attach-workspace: true
+          path: ./terraform
+          requires:
+            - terraform/init
+      - terraform/plan:
+          attach-workspace: true
+          persist-workspace: true
+          path: ./terraform
+          requires:
+            - terraform/validate       
+      - terraform/apply:
+          attach-workspace: true
+          persist-workspace: true
+          path: ./terraform
+          requires:
+            - terraform/plan
